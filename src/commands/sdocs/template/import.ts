@@ -37,23 +37,13 @@ export default class TemplateImport extends SfCommand<object> {
     name: Flags.directory({
       char: 'n',
       summary: messages.getMessage('flags.name.summary'),
-    }),
-    importall: Flags.boolean({
-      char: 'a',
-      summary: messages.getMessage('flags.importall.summary'),
-      default: false,
+      required: true,
     }),
   };
 
   public async run(): Promise<unknown> {
     const { flags } = await this.parse(TemplateImport);
 
-    if (flags.name == null && !flags.importall) {
-      this.error('Either --all or --name is required');
-    }
-    if (flags.name != null && flags.exportall) {
-      this.warn(`--all specified. Ignoring --name parameter ${flags.name}`);
-    }
     this.log(messages.getMessage('info.org-info', [flags.org.getUsername()]));
     if (!flags.importall && flags.name != null) {
       this.log(messages.getMessage('info.migrate', [flags.name]));
@@ -66,35 +56,6 @@ export default class TemplateImport extends SfCommand<object> {
         },
       };
     }
-    /*
-    if(flags.exportall){
-      const activeTemplates: object[] = await SDocUtils.getAllActiveTemplateData(flags.org.getConnection());
-      if(activeTemplates !=null){
-        const exportResults = {
-          'status':'success',
-          'results':[]
-        }
-        let exportedCount=0;
-
-        this.progress.start(exportedCount, {}, { title: 'Template Export progress' });
-        this.progress.setTotal(activeTemplates.length);
-        for (const theTemplate of activeTemplates) {
-          const templateDirectory = await this.writeTemplateToFile(flags.outputdir,theTemplate,flags);
-          exportResults.results.push(templateDirectory);
-          exportedCount++;
-          this.progress.update(exportedCount);
-          
-        }
-        this.progress.stop();
-        this.log('Template export complete');
-        return exportResults;
-      }else{
-        return {
-          'status':'failed',
-          'message':'No active templates found !!!'
-        };
-      }
-    }*/
   }
 
   private async importTemplateFromFile(flags: object): Promise<object> {
