@@ -30,7 +30,7 @@ export default class TemplateImport extends SfCommand<object> {
       required: true,
     }),
     inputdir: Flags.directory({
-      char: 'i',
+      char: 'd',
       summary: messages.getMessage('flags.inputdir.summary'),
       required: true,
     }),
@@ -60,8 +60,7 @@ export default class TemplateImport extends SfCommand<object> {
 
   private async importTemplateFromFile(flags: object): Promise<object> {
     const sdocsDir = `${flags.inputdir}${path.sep}sdocs`;
-    const orgIdDir = `${sdocsDir}${path.sep}${flags.org.orgId}`;
-    const sdocsTemplatesDir = `${orgIdDir}${path.sep}templates`;
+    const sdocsTemplatesDir = `${sdocsDir}${path.sep}templates`;
     const templateDir = `${sdocsTemplatesDir}${path.sep}${flags.name}`;
     if (!fs.existsSync(templateDir)) {
       this.error(` ${templateDir} not found or doesn't exist`);
@@ -95,7 +94,7 @@ export default class TemplateImport extends SfCommand<object> {
     }
     let importedFileCount = 0;
 
-    this.progress.start(importedFileCount, {}, { title: 'Template files export progress' });
+    this.progress.start(importedFileCount, {}, { title: 'Template files import progress' });
     this.progress.setTotal(allAttachments.length);
 
     for (const theAttachment of allAttachments) {
