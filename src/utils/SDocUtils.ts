@@ -57,11 +57,17 @@ export default class SDocUtils {
     }
   }
 
-  public static async createTemplate(theTemplate: object, connection: Connection): Promise<object> {
+  public static async createTemplate(theTemplate: object, connection: Connection, externalId: string): Promise<object> {
     theTemplate.Id = null;
-    const insertResult = await connection.insert('SDOC__SDTemplate__c', theTemplate);
-    if (insertResult.success) {
-      theTemplate.Id = insertResult.id;
+    let dmlResult;
+    console.log('SDOCUtils.createTemplate : externalId = ' + externalId);
+    if (externalId == null) {
+      dmlResult = await connection.insert('SDOC__SDTemplate__c', theTemplate);
+    } else {
+      dmlResult = await connection.upsert('SDOC__SDTemplate__c', theTemplate, externalId);
+    }
+    if (dmlResult.success) {
+      theTemplate.Id = dmlResult.id;
     }
     return theTemplate;
   }

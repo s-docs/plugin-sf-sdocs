@@ -39,6 +39,11 @@ export default class TemplateImport extends SfCommand<object> {
       summary: messages.getMessage('flags.name.summary'),
       required: true,
     }),
+    externalid: Flags.directory({
+      char: 'e',
+      summary: messages.getMessage('flags.externalid.summary'),
+      required: false,
+    }),
   };
 
   public async run(): Promise<unknown> {
@@ -62,6 +67,7 @@ export default class TemplateImport extends SfCommand<object> {
     const sdocsDir = `${flags.inputdir}${path.sep}sdocs`;
     const sdocsTemplatesDir = `${sdocsDir}${path.sep}templates`;
     const templateDir = `${sdocsTemplatesDir}${path.sep}${flags.name}`;
+    const externalId = flags.externalid;
     if (!fs.existsSync(templateDir)) {
       this.error(` ${templateDir} not found or doesn't exist`);
     }
@@ -70,7 +76,7 @@ export default class TemplateImport extends SfCommand<object> {
       this.error(` ${templateJsonFile} not found or doesn't exist`);
     } else {
       let theTemplate = JSON.parse(fs.readFileSync(templateJsonFile));
-      theTemplate = await SDocUtils.createTemplate(theTemplate, flags.org.getConnection());
+      theTemplate = await SDocUtils.createTemplate(theTemplate, flags.org.getConnection(), flags.externalid);
       if (theTemplate.SDOC__Template_Format__c === 'PDF-UPLOAD' || theTemplate.SDOC__Template_Format__c === 'DOCX') {
         await this.importAttachmentsForPDFUpload(templateDir, theTemplate, flags);
       }
