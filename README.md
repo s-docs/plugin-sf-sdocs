@@ -8,7 +8,13 @@
 git clone https://github.com/s-docs/plugin-sf-sdocs
 ```
 
-2. In the directory where you cloned the repo execute the following:
+2. Build the plugin using the below command
+
+```
+npm install
+```
+
+3. In the directory where you cloned the repo execute the following:
 
 ```
 sf plugins link .
