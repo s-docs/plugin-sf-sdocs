@@ -49,3 +49,5 @@ oclif.manifest.json
 data
 .github
 .vscode
+yarn.lock
+yarn.lock

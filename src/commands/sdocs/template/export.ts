@@ -46,6 +46,10 @@ export default class TemplateExport extends SfCommand<CommandResult> {
       summary: messages.getMessage('flags.exportall.summary'),
       default: false,
     }),
+    filters: Flags.directory({
+      char: 'f',
+      summary: messages.getMessage('flags.filters.summary'),
+    })
   };
 
   public async run(): Promise<CommandResult> {
@@ -68,7 +72,7 @@ export default class TemplateExport extends SfCommand<CommandResult> {
       };
     }
     if (flags.exportall) {
-      const activeTemplates: object[] = await SDocUtils.getAllActiveTemplateData(flags.org.getConnection());
+      const activeTemplates: object[] = await SDocUtils.getAllActiveTemplateData(flags.org.getConnection(), flags.filters);
       if (activeTemplates != null) {
         const exportResults = {
           status: 'success',

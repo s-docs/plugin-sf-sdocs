@@ -18,9 +18,11 @@ export default class SDocUtils {
     }
   }
 
-  public static async getAllActiveTemplateData(connection: Connection): Promise<object> {
+  public static async getAllActiveTemplateData(connection: Connection, criteria: string): Promise<object> {
     let queryToExecute: string = await this.getSoqlQuery(connection);
     queryToExecute += ' where SDOC__Active__c = true';
+    queryToExecute += criteria!=null? ` and ${criteria}`:'';
+    console.log(`Executing query : ${queryToExecute} `);
     const queryResult: object = await connection.query(queryToExecute);
     if (queryResult.done != null && queryResult.totalSize > 0) {
       return queryResult.records;
@@ -60,6 +62,7 @@ export default class SDocUtils {
   public static async createTemplate(theTemplate: object, connection: Connection, externalId: string): Promise<object> {
     theTemplate.Id = null;
     let dmlResult;
+    await this.removeFieldsNotInDestionOrg(connection, theTemplate);
     console.log('SDOCUtils.createTemplate : externalId = ' + externalId);
     if (externalId == null) {
       dmlResult = await connection.insert('SDOC__SDTemplate__c', theTemplate);
@@ -70,6 +73,21 @@ export default class SDocUtils {
       theTemplate.Id = dmlResult.id;
     }
     return theTemplate;
+  }
+
+  private static async removeFieldsNotInDestionOrg(connection: Connection, theTemplate: object){
+    let destOrgFields = await this.getTemplateFields(connection);
+    let sourceObjFields = Object.keys(theTemplate);
+    for(let i=0;i<sourceObjFields.length;i++){
+      let matchingField = destOrgFields.filter((fld)=> fld === sourceObjFields[i]);
+      if(matchingField !=null && matchingField.length ===1){
+        //the field exists in the destination
+      }else{
+        console.log(`Removing ${sourceObjFields[i]} from the template data as the field doesn't existing the destination org`);
+        delete theTemplate[sourceObjFields[i]];
+      }
+    }
+
   }
 
   public static async createAttachmentForTemplate(theAttachment: object, connection: Connection): Promise<object> {
@@ -88,5 +106,26 @@ export default class SDocUtils {
     writeableFieldsNames.push('Name');
     writeableFieldsNames.push('Id');
     return `select ${writeableFieldsNames.join(',')} from SDOC__SDTemplate__c`;
+  }
+
+  private static async getTemplateFields(connection: Connection): Promise<string> {
+    const templateObjDescribe = await connection.describe('SDOC__SDTemplate__c');
+    const objFields = templateObjDescribe.fields;
+    const writeableCustomFields = objFields.filter((fld) => fld.createable && fld.custom);
+    const writeableFieldsNames = writeableCustomFields.map((fld) => fld.name);
+    writeableFieldsNames.push('Name');
+    writeableFieldsNames.push('Id');
+    return writeableFieldsNames;
+  }
+
+
+  private static async getFields(connection: Connection): Promise<string[]> {
+    const templateObjDescribe = await connection.describe('SDOC__SDTemplate__c');
+    const objFields = templateObjDescribe.fields;
+    const writeableCustomFields = objFields.filter((fld) => fld.createable && fld.custom);
+    const writeableFieldsNames = writeableCustomFields.map((fld) => fld.name);
+    writeableFieldsNames.push('Name');
+    writeableFieldsNames.push('Id');
+    return writeableFieldsNames;
   }
 }

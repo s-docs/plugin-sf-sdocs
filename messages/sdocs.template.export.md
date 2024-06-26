@@ -22,6 +22,10 @@ The name of the template to be exported. Should be the value of the `Name` field
 
 A flag that tells the plugin if you want to export all active templates. Default is `false`
 
+# flags.filters.summary
+
+Specify any fitlers when extracting templates. This is the `WHERE` clause for the extraction
+
 # examples
 
 - Export a template named `NDA 2023` from a sandbox to the `templates` output directory
