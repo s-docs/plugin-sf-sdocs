@@ -27,7 +27,7 @@ If the above step is successful, then the plugin was linked in your local enviro
 To ensure the plugin in linked correctly, run the following command:
 
 ```
-sf sdocs export --help
+sf sdocs template export --help
 ```
 
 This should print something like below:
@@ -66,8 +66,8 @@ EXAMPLES
 
 ### `export`
 
-This exports a given template or all templates to the file system that can be then imported into another org or environment. See the examples show when you do `sf sdocs export --help` for more specifics
+This exports a given template or all templates to the file system that can be then imported into another org or environment. See the examples show when you do `sf sdocs template export --help` for more specifics
 
 ### `import`
 
-This exports a given template from the file system into another org or environment. See the examples show when you do `sf sdocs import --help` for more specifics
+This exports a given template from the file system into another org or environment. See the examples show when you do `sf sdocs template import --help` for more specifics
