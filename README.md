@@ -41,6 +41,7 @@ USAGE
 FLAGS
   -a, --exportall          A flag that tells the plugin if you want to export all active templates. Default is `false`
   -d, --outputdir=<value>  (required) The directory where the templates will be exported
+  -f, --filters=<value>    Specify any fitlers when extracting templates. This is the `WHERE` clause for the extraction
   -n, --name=<value>       The name of the template to be exported. Should be the value of the `Name` field on the `SDOC___SDTemplate__c` object
   -o, --org=<value>        (required) The org alias that you want to export the template from
 
