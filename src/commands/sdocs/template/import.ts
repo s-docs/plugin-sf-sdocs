@@ -37,11 +37,16 @@ export default class TemplateImport extends SfCommand<object> {
     name: Flags.directory({
       char: 'n',
       summary: messages.getMessage('flags.name.summary'),
-      required: true,
+      required: false,
     }),
     externalid: Flags.directory({
       char: 'e',
       summary: messages.getMessage('flags.externalid.summary'),
+      required: false,
+    }),
+    importall: Flags.boolean({
+      char: 'i',
+      summary: messages.getMessage('flags.importall.summary'),
       required: false,
     }),
   };
@@ -61,8 +66,37 @@ export default class TemplateImport extends SfCommand<object> {
         },
       };
     }
+
+    if (flags.importall){
+      await this.importAllTemplatesFromDirectory(flags);
+    }
   }
 
+  private async importAllTemplatesFromDirectory(flags: object): Promise<object> {
+    const sdocsDir = `${flags.inputdir}${path.sep}sdocs`;
+    const sdocsTemplatesDir = `${sdocsDir}${path.sep}templates`;
+    this.log(`Importing all templates from ${sdocsTemplatesDir}`);
+   
+    let templatesToMigrate = await fs.readdirSync(sdocsTemplatesDir);
+    for(let i=0;i<templatesToMigrate.length;i++){
+      let templateDir = `${sdocsTemplatesDir}${path.sep}${templatesToMigrate[i]}`;
+      this.log(`Importing template: ${templatesToMigrate[i]} from ${templateDir}`); 
+      const externalId = flags.externalid;
+      if (!fs.existsSync(templateDir)) {
+        this.error(` ${templateDir} not found or doesn't exist`);
+      }
+      const templateJsonFile = `${templateDir}${path.sep}template.json`;
+      if (!fs.existsSync(templateJsonFile)) {
+        this.error(` ${templateJsonFile} not found or doesn't exist`);
+      } else {
+        let theTemplate = JSON.parse(fs.readFileSync(templateJsonFile));
+        theTemplate = await SDocUtils.createTemplate(theTemplate, flags.org.getConnection(), flags.externalid);
+        if (theTemplate.SDOC__Template_Format__c === 'PDF-UPLOAD' || theTemplate.SDOC__Template_Format__c === 'DOCX') {
+          await this.importAttachmentsForPDFUpload(templateDir, theTemplate, flags);
+        }
+      }        
+    }
+  }
   private async importTemplateFromFile(flags: object): Promise<object> {
     const sdocsDir = `${flags.inputdir}${path.sep}sdocs`;
     const sdocsTemplatesDir = `${sdocsDir}${path.sep}templates`;
