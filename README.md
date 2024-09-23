@@ -53,14 +53,7 @@ DESCRIPTION
 
   Export S-Docs template from an salesforce org
 
-EXAMPLES
-  Export a template named `NDA 2023` from a sandbox to the `templates` output directory
 
-    $ sf sdocs template export -u my_dev_sandbox -o ./templates -n "NDA 2023"
-
-  Export all templates from `my_dev_sandbox`
-
-    $ sf sdocs template export -u my_dev_sandbox -o ./templates --exportall
 ```
 
 ## Commands available in SDocs CLI
@@ -69,6 +62,34 @@ EXAMPLES
 
 This exports a given template or all templates to the file system that can be then imported into another org or environment. See the examples show when you do `sf sdocs template export --help` for more specifics
 
+#### Examples
+
+Export a template named `NDA 2023` from a sandbox to the `templates` output directory
+
+```
+    $ sf sdocs template export -o my_dev_sandbox -d ./templates -n "NDA 2023"
+```
+
+Export all templates from `my_dev_sandbox`
+
+```
+    $ sf sdocs template export -o my_dev_sandbox -d ./templates --exportall
+```
+
 ### `import`
 
 This exports a given template from the file system into another org or environment. See the examples show when you do `sf sdocs template import --help` for more specifics
+
+#### Examples
+
+Import a template named `NDA 2023` to a sandbox from the `templates` output directory
+
+```
+    $ sf sdocs template import -o my_dev_sandbox -d ./templates -n "NDA 2023"
+```
+
+Import all templates from `my_dev_sandbox`
+
+```
+    $ sf sdocs template import -o my_dev_sandbox -d ./templates --importall
+```
