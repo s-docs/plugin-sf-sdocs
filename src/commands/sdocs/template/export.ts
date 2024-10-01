@@ -119,7 +119,8 @@ export default class TemplateExport extends SfCommand<CommandResult> {
       fs.mkdirSync(sdocsTemplatesDir);
     }
 
-    const templateDir = `${sdocsTemplatesDir}${path.sep}${theTemplate.Name}`;
+    const templateNameEscaped = theTemplate.Name.replaceAll(path.sep,'_');
+    const templateDir = `${sdocsTemplatesDir}${path.sep}${templateNameEscaped}`;
     if (!fs.existsSync(templateDir)) {
       // this.log(`Creating ${templateDir}`);
       fs.mkdirSync(templateDir);
