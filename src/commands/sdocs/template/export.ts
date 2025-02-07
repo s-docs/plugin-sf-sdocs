@@ -131,7 +131,9 @@ export default class TemplateExport extends SfCommand<CommandResult> {
 
     if (theTemplate.SDOC__Template_Format__c === 'PDF-UPLOAD' || theTemplate.SDOC__Template_Format__c === 'DOCX') {
       templateAttachments = await this.exportAttachmentsForPDFUpload(templateDir, theTemplate, flags);
-      fs.writeFileSync(templateAttachmentJsonFile, JSON.stringify(templateAttachments, null, 4));
+      if(templateAttachments && templateAttachments.length > 0) {
+        fs.writeFileSync(templateAttachmentJsonFile, JSON.stringify(templateAttachments, null, 4));
+      }
     }
     delete theTemplate.attributes;
     delete theTemplate.Id;
@@ -154,18 +156,22 @@ export default class TemplateExport extends SfCommand<CommandResult> {
     if (!fs.existsSync(templateFilesDir)) {
       fs.mkdirSync(templateFilesDir);
     }
-    for (const theAttachment of allAttachments) {
-      const attachmentDataFile = `${templateFilesDir}${path.sep}${theAttachment.Name}`;
-      const attachmentBase64: Buffer = await SDocUtils.getBodyForAttachment(
-        flags.org.getConnection(),
-        theAttachment.Body
-      );
-      fs.writeFileSync(attachmentDataFile, attachmentBase64);
-      delete theAttachment.attributes;
-      delete theAttachment.Body;
-      delete theAttachment.ParentId;
-      delete theAttachment.Id;
+    if(allAttachments && allAttachments.length > 0) {
+      for (const theAttachment of allAttachments) {
+        const attachmentDataFile = `${templateFilesDir}${path.sep}${theAttachment.Name}`;
+        const attachmentBase64: Buffer = await SDocUtils.getBodyForAttachment(
+          flags.org.getConnection(),
+          theAttachment.Body
+        );
+        fs.writeFileSync(attachmentDataFile, attachmentBase64);
+        delete theAttachment.attributes;
+        delete theAttachment.Body;
+        delete theAttachment.ParentId;
+        delete theAttachment.Id;
+      }
+      return allAttachments;
     }
-    return allAttachments;
+    
+    
   }
 }
